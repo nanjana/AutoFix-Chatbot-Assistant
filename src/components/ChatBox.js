@@ -14,38 +14,45 @@ function ChatBox() {
 
   const handleSend = async () => {
     if (!input.trim()) return;
-
+  
     const userMessage = { text: input, sender: 'user' };
     setMessages((prev) => [...prev, userMessage]);
-
+  
     try {
-        const response = await axios.post(
-          'https://api.openai.com/v1/chat/completions',
-          {
-            model: 'gpt-3.5-turbo',
-            messages: [
-              {
-                role: 'system',
-                content:
-                  'You are an expert automotive assistant. Help users with car problems and give helpful advice.',
-              },
-              { role: 'user', content: input },
-            ],
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${process.env.REACT_APP_OPENAI_API_KEY}`,
-              'Content-Type': 'multipart/form-data',
+      const response = await axios.post(
+        'https://api.openai.com/v1/chat/completions',
+        {
+          model: 'gpt-3.5-turbo',
+          messages: [
+            {
+              role: 'system',
+              content:
+                'You are an expert automotive assistant. Help users with car problems and give helpful advice.',
             },
-          }
-        );
-        console.log(response.data);
-      } catch (error) {
-        console.error('Error from OpenAI:', error);
-      }      
-
+            { role: 'user', content: input },
+          ],
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${process.env.REACT_APP_OPENAI_API_KEY}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+  
+      const assistantMessage = {
+        text: response.data.choices[0].message.content,
+        sender: 'bot',
+      };
+  
+      setMessages((prev) => [...prev, assistantMessage]);
+    } catch (error) {
+      console.error('Error from OpenAI:', error);
+      alert('Something went wrong while talking to AutoFix Assistant.');
+    }
+  
     setInput('');
-  };
+  };  
 
   const handleRecord = async () => {
     if (!isRecording) {
