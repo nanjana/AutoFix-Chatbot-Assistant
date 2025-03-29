@@ -155,7 +155,6 @@ function ChatBox() {
 
   return (
     <div className="chatbox">
-      <h1 className="chat-title">🚗 AutoFix Assistant</h1>
 
       <div className="messages">
         {messages.map((msg, i) => (
